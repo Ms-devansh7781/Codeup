@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 public class MyString {
 
     private String value = "MyString";
@@ -7,9 +5,9 @@ public class MyString {
     public MyString(String value) {
         this.value = value;
     }
-	
-    public String append(String value) {
-        this.value += value;
+
+    public String append(String str) {
+        this.value += str;
         return this.value;
     }
 
@@ -30,24 +28,22 @@ public class MyString {
         return words;
     }
 
-  
     public String replace(String oldStr, String newStr) {
-        StringBuilder result = new StringBuilder();
+        String result = "";
         int i = 0;
         while (i < this.value.length()) {
             if (i + oldStr.length() <= this.value.length() &&
-                this.value.substring(i, i + oldStr.length()).equals(oldStr)) {
-                result.append(newStr);
+                value.substring(i, i + oldStr.length()).equals(oldStr)) {
+                result += newStr;
                 i += oldStr.length();
             } else {
-                result.append(this.value.charAt(i));
+                result += this.value.charAt(i);
                 i++;
             }
         }
-        this.value = result.toString();
+       this.value = result;
         return this.value;
     }
-
 
     public boolean isPalindrome() {
         for (int i = 0, j = this.value.length() - 1; i < j; i++, j--) {
@@ -58,11 +54,10 @@ public class MyString {
         return true;
     }
 
-  
     public char maxRepeat() {
         int[] freq = new int[256];
         for (int i = 0; i < this.value.length(); i++) {
-            freq[this.value.charAt(i)]++;
+            freq[value.charAt(i)]++;
         }
         int max = 0;
         char maxCh = ' ';
@@ -75,54 +70,69 @@ public class MyString {
         return maxCh;
     }
 
-
     public String[] split(String pattern) {
-        ArrayList<String> list = new ArrayList<>();
-        int i = 0;
-        String str = "";
-        while (i <= this.value.length() - pattern.length()) {
+        int count = 0;
+
+        for (int i = 0; i <= this.value.length() - pattern.length(); ) {
             boolean match = true;
             for (int j = 0; j < pattern.length(); j++) {
-                if (pattern.charAt(j) != this.value.charAt(i + j)) {
+                if (this.value.charAt(i + j) != pattern.charAt(j)) {
                     match = false;
                     break;
                 }
             }
             if (match) {
-                list.add(str);
-                str = "";
+                count++;
                 i += pattern.length();
             } else {
-                str += this.value.charAt(i);
                 i++;
             }
         }
-        while (i < this.value.length()) {
-            str += this.value.charAt(i++);
-        }
-        list.add(str);
-        return list.toArray(new String[0]);
-    }
 
+        String[] parts = new String[count + 1];
+        int partIndex = 0;
+        String temp = "";
+        for (int i = 0; i < this.value.length(); ) {
+            boolean match = true;
+            if (i + pattern.length() <= this.value.length()) {
+                for (int j = 0; j < pattern.length(); j++) {
+                    if (this.value.charAt(i + j) != pattern.charAt(j)) {
+                        match = false;
+                        break;
+                    }
+                }
+            } else {
+                match = false;
+            }
 
-    public String splice(int start, int length) {
-        if (start < 0 || start >= value.length() || length < 0 || start + length > value.length())
-            return this.value;
-
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < value.length(); i++) {
-            if (i < start || i >= start + length) {
-                sb.append(value.charAt(i));
+            if (match) {
+                parts[partIndex++] = temp;
+                temp = "";
+                i += pattern.length();
+            } else {
+                temp += this.value.charAt(i);
+                i++;
             }
         }
-        this.value = sb.toString();
+        parts[partIndex] = temp;
+        return parts;
+    }
+
+    public String splice(int start, int length) {
+        if (start < 0 || start >= this.value.length() || length < 0 || start + length > this.value.length())
+            return value;
+
+        String result = "";
+        for (int i = 0; i < this.value.length(); i++) {
+            if (i < start || i >= start + length) {
+                result += this.value.charAt(i);
+            }
+        }
+        this.value = result;
         return this.value;
     }
 
-
     public String sort() {
-        if (this.value.length() <= 1) return this.value;
-
         char[] chars = this.value.toCharArray();
         for (int i = 0; i < chars.length - 1; i++) {
             for (int j = 0; j < chars.length - 1 - i; j++) {
@@ -137,20 +147,25 @@ public class MyString {
         return this.value;
     }
 
-
     public String shift(int n) {
         if (this.value.length() <= 1) return this.value;
         n = n % this.value.length();
         if (n <= 0) return this.value;
-
         this.value = this.value.substring(n) + this.value.substring(0, n);
         return this.value;
     }
 
-
     public String reverse() {
-        StringBuilder sb = new StringBuilder(this.value);
-        this.value = sb.reverse().toString();
+        char[] chars = this.value.toCharArray();
+        int left = 0, right = chars.length - 1;
+        while (left < right) {
+            char temp = chars[left];
+            chars[left] = chars[right];
+            chars[right] = temp;
+            left++;
+            right--;
+        }
+        this.value = new String(chars);
         return this.value;
     }
 
