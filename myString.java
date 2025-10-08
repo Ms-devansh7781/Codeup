@@ -1,27 +1,21 @@
-import java.util.*;
-
 public class MyString {
-    private char[] c;
 
- // Constructor : takes input string
-    public MyString(String input) {
-        c = input.toCharArray();
+    private String value = "MyString";
+
+    public MyString(String value) {
+        this.value = value;
     }
 
-// Append 
-    public void append(String newStr) {
-        char[] newC = new char[c.length + newStr.length()];
-        for (int i = 0; i < c.length; i++) newC[i] = c[i];
-        for (int i = 0; i < newStr.length(); i++) newC[c.length + i] = newStr.charAt(i);
-        c = newC;
-        System.out.println("After append: " + new String(c));
+    public String append(String str) {
+        this.value += str;
+        return this.value;
     }
 
-// CountWords
-    public void countWords() {
+    public int countWords() {
         int words = 0;
         boolean inWord = false;
-        for (char ch : c) {
+        for (int i = 0; i < this.value.length(); i++) {
+            char ch = this.value.charAt(i);
             if (ch != ' ' && ch != '\t') {
                 if (!inWord) {
                     words++;
@@ -31,58 +25,40 @@ public class MyString {
                 inWord = false;
             }
         }
-        System.out.println("Word count: " + words);
+        return words;
     }
 
-// Replace
-    public void replace(char oldC, char newC) {
-        for (int i = 0; i < c.length; i++) {
-            if (c[i] == oldC) c[i] = newC;
-        }
-        System.out.println("After replace: " + new String(c));
-    }
-
-// Check palindrome
-    public void isPalindrome() {
-        boolean palin = true;
-        for (int i = 0, j = c.length - 1; i < j; i++, j--) {
-            if (Character.toLowerCase(c[i]) != Character.toLowerCase(c[j])) {
-                palin = false;
-                break;
+    public String replace(String oldStr, String newStr) {
+        String result = "";
+        int i = 0;
+        while (i < this.value.length()) {
+            if (i + oldStr.length() <= this.value.length() &&
+                value.substring(i, i + oldStr.length()).equals(oldStr)) {
+                result += newStr;
+                i += oldStr.length();
+            } else {
+                result += this.value.charAt(i);
+                i++;
             }
         }
-        System.out.println(palin ? "Palindrome!" : "Not a palindrome.");
+       this.value = result;
+        return this.value;
     }
 
-// splice
-    public void splice(int start, int end) {
-		
-        if (start >= 0 && end <= c.length && start < end) {
-            char[] sub = new char[end - start];
-            for (int i = start; i < end; i++) sub[i - start] = c[i];
-            System.out.println("Spliced string: " + new String(sub));
-        } else {
-            System.out.println("Invalid range!");
-        }
-    }
-
-// Split
-    public void split() {
-        System.out.println("Split by spaces:");
-        int start = 0;
-        for (int i = 0; i <= c.length; i++) {
-            if (i == c.length || c[i] == ' ') {
-                for (int j = start; j < i; j++) System.out.print(c[j]);
-                System.out.println();
-                start = i + 1;
+    public boolean isPalindrome() {
+        for (int i = 0, j = this.value.length() - 1; i < j; i++, j--) {
+            if (Character.toLowerCase(this.value.charAt(i)) != Character.toLowerCase(this.value.charAt(j))) {
+                return false;
             }
         }
+        return true;
     }
 
-// maxRepeatingCharacter
-    public void maxRepeatingCharacter() {
+    public char maxRepeat() {
         int[] freq = new int[256];
-        for (char ch : c) freq[ch]++;
+        for (int i = 0; i < this.value.length(); i++) {
+            freq[value.charAt(i)]++;
+        }
         int max = 0;
         char maxCh = ' ';
         for (int i = 0; i < 256; i++) {
@@ -91,69 +67,110 @@ public class MyString {
                 maxCh = (char) i;
             }
         }
-        System.out.println("Max repeating character: " + maxCh + " (" + max + " times)");
+        return maxCh;
     }
 
-// Sort
-    public void sort() {
-        for (int i = 0; i < c.length - 1; i++) {
-            for (int j = 0; j < c.length - 1 - i; j++) {
-                if (c[j] > c[j + 1]) {
-                    char temp = c[j];
-                    c[j] = c[j + 1];
-                    c[j + 1] = temp;
+    public String[] split(String pattern) {
+        int count = 0;
+
+        for (int i = 0; i <= this.value.length() - pattern.length(); ) {
+            boolean match = true;
+            for (int j = 0; j < pattern.length(); j++) {
+                if (this.value.charAt(i + j) != pattern.charAt(j)) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) {
+                count++;
+                i += pattern.length();
+            } else {
+                i++;
+            }
+        }
+
+        String[] parts = new String[count + 1];
+        int partIndex = 0;
+        String temp = "";
+        for (int i = 0; i < this.value.length(); ) {
+            boolean match = true;
+            if (i + pattern.length() <= this.value.length()) {
+                for (int j = 0; j < pattern.length(); j++) {
+                    if (this.value.charAt(i + j) != pattern.charAt(j)) {
+                        match = false;
+                        break;
+                    }
+                }
+            } else {
+                match = false;
+            }
+
+            if (match) {
+                parts[partIndex++] = temp;
+                temp = "";
+                i += pattern.length();
+            } else {
+                temp += this.value.charAt(i);
+                i++;
+            }
+        }
+        parts[partIndex] = temp;
+        return parts;
+    }
+
+    public String splice(int start, int length) {
+        if (start < 0 || start >= this.value.length() || length < 0 || start + length > this.value.length())
+            return value;
+
+        String result = "";
+        for (int i = 0; i < this.value.length(); i++) {
+            if (i < start || i >= start + length) {
+                result += this.value.charAt(i);
+            }
+        }
+        this.value = result;
+        return this.value;
+    }
+
+    public String sort() {
+        char[] chars = this.value.toCharArray();
+        for (int i = 0; i < chars.length - 1; i++) {
+            for (int j = 0; j < chars.length - 1 - i; j++) {
+                if (chars[j] > chars[j + 1]) {
+                    char temp = chars[j];
+                    chars[j] = chars[j + 1];
+                    chars[j + 1] = temp;
                 }
             }
         }
-        System.out.println("Sorted string: " + new String(c));
+        this.value = new String(chars);
+        return this.value;
     }
 
-// shift
-
-    public void shift(int n) {
-        if (c.length <= 1) return;
-
-        n = n % c.length;
-        if (n <= 0) return;
-
-        char[] temp = new char[c.length];
-        for (int i = n; i < c.length; i++) {
-            temp[i - n] = c[i];
-        }
-        for (int i = 0; i < n; i++) {
-            temp[c.length - n + i] = c[i];
-        }
-        c = temp;
-        System.out.println("After shift: " + new String(c));
+    public String shift(int n) {
+        if (this.value.length() <= 1) return this.value;
+        n = n % this.value.length();
+        if (n <= 0) return this.value;
+        this.value = this.value.substring(n) + this.value.substring(0, n);
+        return this.value;
     }
 
-// Reverse
-    public void reverse() {
-        for (int i = 0, j = c.length - 1; i < j; i++, j--) {
-            char temp = c[i];
-            c[i] = c[j];
-            c[j] = temp;
+    public String reverse() {
+        char[] chars = this.value.toCharArray();
+        int left = 0, right = chars.length - 1;
+        while (left < right) {
+            char temp = chars[left];
+            chars[left] = chars[right];
+            chars[right] = temp;
+            left++;
+            right--;
         }
-        System.out.println("Reversed string: " + new String(c));
+        this.value = new String(chars);
+        return this.value;
     }
 
-
-
-// Main
-
-    public static void main(String[] args) {
-		
-		// Example 
-        MyString str = new MyString("hello world");
-        str.append(" java");
-        str.countWords();
-        str.replace('l', 'x');
-        str.isPalindrome();
-        str.splice(0, 5);
-        str.split();
-        str.maxRepeatingCharacter();
-        str.sort();
-        str.shift(3);
-        str.reverse();
+    @Override
+    public String toString() {
+        return this.value;
     }
 }
